@@ -35,6 +35,7 @@
 <button type="submit" name="orden" value="Nuevo"> Cliente Nuevo </button><br>
 </form>
 <br>
+<p><b><?=$_SESSION['NombreUser']?></b> Rol: <?=$_SESSION['rol']?></p>
 <p>Para ordenar de menor a mayor haga click sobre el titulo de la tabla</p>
 
 <table>
@@ -48,8 +49,8 @@
 <td><?= $valor->gender ?> </td>
 <td><?= $valor->ip_address ?> </td>
 <td><?= $valor->telefono ?> </td>
-<td><a href="#" onclick="confirmarBorrar('<?=$valor->first_name?>',<?=$valor->id?>);" >Borrar</a></td>
-<td><a href="?orden=Modificar&id=<?=$valor->id?>">Modificar</a></td>
+<?php if ($_SESSION['rol']==1): ?><td><a href="#" onclick="confirmarBorrar('<?=$valor->first_name?>',<?=$valor->id?>);">Borrar</a></td>
+<td><a href="?orden=Modificar&id=<?=$valor->id?>">Modificar</a></td><?php endif; ?>
 <td><a href="?orden=Detalles&id=<?=$valor->id?>" >Detalles</a></td>
 
 <tr>
@@ -62,4 +63,5 @@
 <button type="submit" name="nav" value="Anterior"> < </button>
 <button type="submit" name="nav" value="Siguiente"> > </button>
 <button type="submit" name="nav" value="Ultimo"> >> </button>
+<button type="submit" name="nav" value="CSesion"><i class="fa-solid fa-door-open"></i>Cerrar Sesión</button>
 </form>

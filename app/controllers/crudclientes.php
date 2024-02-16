@@ -25,17 +25,27 @@ function crudAlta(){
 function crudDetalles($id){
     $db = AccesoDatos::getModelo();
     $cli = $db->getCliente($id);
+    $_SESSION['idCliente']=$cli->id;
+    if($cli->img_name==null){
+        $ultimoNumero = substr($cli->id, -2);
+        $_SESSION['img']='0000000' .$ultimoNumero.'.jpg';
+    }
     include_once "app/views/detalles.php";
 }
 
 function crudDetallesSiguiente($id){//IMPLEMENTAR
     $db = AccesoDatos::getModelo();
     $cli = $db->getClienteSiguiente($id);
+    $_SESSION['idCliente']=$cli->id;
     if($cli==false){
         $cli = $db->getClienteSiguiente($id-1);
         include_once "app/views/detalles.php";
     }
     else{
+       /* if($cli->img_name==null){
+            $ultimoNumero = substr($cli->id, -2);
+            $_SESSION['img']='0000000' .$ultimoNumero.'.jpg';
+        }*/
       include_once "app/views/detalles.php";  
     }
 }
@@ -43,14 +53,50 @@ function crudDetallesSiguiente($id){//IMPLEMENTAR
 function crudDetallesAnterior($id){//IMPLEMENTAR
     $db = AccesoDatos::getModelo();
     $cli = $db->getClienteAnterior($id);
+    $_SESSION['idCliente']=$cli->id;
     if($cli==false){
         $cli = $db->getClienteAnterior($id+1);
         include_once "app/views/detalles.php";
     }
     else{
+        if($cli->img_name==null){
+            $ultimoNumero = substr($cli->id, -2);
+            $_SESSION['img']='0000000' .$ultimoNumero.'.jpg';
+        }  
       include_once "app/views/detalles.php";  
     }    
 }
+
+function crudModificarSiguiente($id){//IMPLEMENTAR
+    $db = AccesoDatos::getModelo();
+    $cli = $db->getClienteSiguiente($id);
+    if($cli==false){
+        $cli = $db->getClienteSiguiente($id-1);
+        $orden="Modificar";
+        include_once "app/views/formulario.php";
+    }
+    else{
+        $orden="Modificar";
+        include_once "app/views/formulario.php";  
+    }
+}
+
+function crudModificarAnterior($id){//IMPLEMENTAR
+    $db = AccesoDatos::getModelo();
+    $cli = $db->getClienteAnterior($id);
+    if($cli==false){
+        $cli = $db->getClienteAnterior($id+1);
+        $orden="Modificar";
+        include_once "app/views/formulario.php";
+    }
+    else{
+        $orden="Modificar";
+        include_once "app/views/formulario.php";  
+    }    
+}
+
+
+
 
 
 function crudModificar($id){
@@ -109,3 +155,56 @@ function crudPostModificar(){
     }
     
 }
+
+function GenerarPDF(){
+    $db = AccesoDatos::getModelo();
+    $cli = $db->getCliente($_SESSION['idCliente']);
+
+    $pdf = new FPDF();
+    //$pdf->Header();
+    $pdf->AddPage();
+    $pdf->SetFont('Arial','B',20);
+    $pdf->Cell(10,10,"CRUD version 1.1",0,1);
+    $pdf->Cell(10,10,"",0,1);
+
+    $pdf->SetFont('Arial','I',16);
+    $pdf->Cell(10,10,"Cliente: $cli->id",0,1);
+    $pdf->Image("https://robohash.org/".$_SESSION['img'].".jpg", 140, 30, 40, 0);
+    
+    $pdf->SetFont('Arial','I',12);
+    $pdf->Cell(40,10,"Nombre: $cli->first_name",0,1);
+    $pdf->Cell(40,10,"Apellido: $cli->last_name",0,1);
+    $pdf->Cell(40,10,"Email: $cli->email",0,1);
+    $pdf->Cell(40,10,"Genero: $cli->gender",0,1);
+    $pdf->Cell(40,10,"IP: $cli->ip_address",0,1);
+    $pdf->Cell(40,10,"Numero de telefono: $cli->telefono",0,1);
+    $pdf->Output();
+}
+
+function LogIn($usuario, $contraseña){
+    $db = AccesoDatos::getModelo();
+    $cli = $db->checkLogIn($usuario);
+    //los botones modificar y borrar aparecen o desaparecen desde list.php
+    if($cli==false){
+        $_SESSION['vista']="login";
+        $_SESSION['checkLogin']=2;
+        $_SESSION['fallo']= "<script>alert('No Existe el usuario')</script>";
+    }
+    else{
+        if(password_verify($contraseña, $cli->password)==1){
+            $_SESSION['rol']=$cli->rol;
+            $_SESSION['NombreUser']=$cli->login;
+            $_SESSION['checkLogin']=1;  
+            $_SESSION['ordenacion']="id";
+        }else{
+            $_SESSION['checkLogin']=2;
+            $_SESSION['fallo']=  "<script>alert('Contraseña incorrecta')</script>";
+            $_SESSION['vista']="login";
+        }
+    }
+   
+    
+}
+
+
+

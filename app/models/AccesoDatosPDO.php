@@ -55,11 +55,11 @@ class AccesoDatos {
     
 
     // SELECT Devuelvo la lista de Usuarios
-    public function getClientes ($primero,$cuantos):array {
+    public function getClientes ($modo,$primero,$cuantos):array {
         $tuser = [];
         // Crea la sentencia preparada
        // echo "<h1> $primero : $cuantos  </h1>";
-        $stmt_usuarios  = $this->dbh->prepare("select * from Clientes limit $primero,$cuantos");
+        $stmt_usuarios  = $this->dbh->prepare("select * from Clientes order by $modo limit $primero,$cuantos");
         // Si falla termina el programa
         $stmt_usuarios->setFetchMode(PDO::FETCH_CLASS, 'Cliente');
     
@@ -70,6 +70,22 @@ class AccesoDatos {
         }
                 // Devuelvo el array de objetos
         return $tuser;
+    }
+
+    public function ordenarClientes($modo,$primero,$cuantos){
+        $tuser = [];
+
+        $stmt_usuarios  = $this->dbh->prepare("SELECT * FROM clientes ORDER BY $modo ASC limit $primero,$cuantos");
+        $stmt_usuarios->setFetchMode(PDO::FETCH_CLASS, 'Cliente');
+    
+        if ( $stmt_usuarios->execute() ){
+            while ( $user = $stmt_usuarios->fetch()){
+               $tuser[]= $user;
+            }
+        }
+        
+        return $tuser;
+
     }
     
       
@@ -184,21 +200,7 @@ class AccesoDatos {
         trigger_error('La clonación no permitida', E_USER_ERROR); 
     }
 
-    public function ordenarClientes($modo,$primero,$cuantos){
-        $tuser = [];
 
-        $stmt_usuarios  = $this->dbh->prepare("SELECT * FROM clientes ORDER BY $modo ASC limit $primero,$cuantos");
-        $stmt_usuarios->setFetchMode(PDO::FETCH_CLASS, 'Cliente');
-    
-        if ( $stmt_usuarios->execute() ){
-            while ( $user = $stmt_usuarios->fetch()){
-               $tuser[]= $user;
-            }
-        }
-        
-        return $tuser;
-
-    }
 
     public function checkEmail($email){
         $stmt_cli   = $this->dbh->prepare("select * from Clientes where email='$email'");
@@ -213,7 +215,19 @@ class AccesoDatos {
         }
     }
 
-
+    public function checkLogIn($usuario){
+        //$stmt_user   = $this->dbh->prepare("SELECT * FROM `usuarios` WHERE login='$usuario' and password='$contraseñaEncriptada'");
+        $stmt_user   = $this->dbh->prepare("SELECT * FROM `usuarios` WHERE login='$usuario'");
+        $stmt_user->setFetchMode(PDO::FETCH_CLASS, 'Usuario');
+        if ( $stmt_user->execute() ){
+            if ( $obj = $stmt_user->fetch()){
+                $user= $obj;
+                return $user;
+            }else{
+                return false;
+            }
+        }
+    }
   
 }
 

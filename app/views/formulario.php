@@ -27,7 +27,7 @@
     document.addEventListener('readystatechange', asignarEventos, false);
 </script>
 <hr>
-<form   method="POST" action="http://localhost/ejerciciosPHP/EjeMockaroo-CRUD/app/models/guardar.php" enctype="multipart/form-data">
+<form method="post">
 <table>
  <tr><td>id:</td> 
  <td><input type="number" name="id" value="<?=$cli->id ?>"  readonly  ></td></tr>
@@ -51,9 +51,17 @@
  <td><input type="tel" name="telefono" value="<?=$cli->telefono ?>"  ></td></tr>
  </tr>
  <tr><td>Sube una imagen:</td>
-    <td><input type="file" name="subirfoto" /></td></tr>
+    <td><input type="file" name="file" id="file"/></td></tr>
  </table>
  <input type="submit"	 name="orden" 	value="<?=$orden?>">
  <input type="submit"	 name="orden" 	value="Volver">
+ <?php
+ if($orden=="Modificar"){
+    echo "<button type='submit' name='orden' value='AnteriorMod'> Anterior << </button>";
+    echo "<button type='submit' name='orden' value='SiguienteMod'> Siguiente >> </button>"; 
+ }
+
+ ?>
+
 </form> 
 
