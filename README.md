@@ -1,5 +1,7 @@
 LA BASE DE DATOS ESTA ACTUALIZADA
 
+CONTRASEÑA PARA AMBOS USUARIOS SIN CIFRAR: 123
+
 1.	Mostrar en detalles y en modificar la opción de siguiente y anterior 
 SOLUCIÓN: también lo muestra en detalles
 
